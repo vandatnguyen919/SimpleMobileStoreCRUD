@@ -31,6 +31,8 @@ public class MainController extends HttpServlet {
 
     private static final String ADD_TO_CART = "addToCart";
     private static final String DELETE_FROM_CART = "deleteFromCart";
+    private static final String INCREASE_CART_QUANTITY = "increaseCartQuantity";
+    private static final String DECREASE_CART_QUANTITY = "decreaseCartQuantity";
 
     private static final String MOBILE_CONTROLLER = "mobile";
     private static final String WELCOME_CONTROLLER = "welcome";
@@ -68,7 +70,9 @@ public class MainController extends HttpServlet {
                 } else if (action.equalsIgnoreCase(FILTER_MOBILE)) {
                     url = WELCOME_CONTROLLER;
                 } else if (action.equalsIgnoreCase(ADD_TO_CART)
-                        || action.equalsIgnoreCase(DELETE_FROM_CART)) {
+                        || action.equalsIgnoreCase(DELETE_FROM_CART)
+                        || action.equalsIgnoreCase(INCREASE_CART_QUANTITY)
+                        || action.equalsIgnoreCase(DECREASE_CART_QUANTITY)) {
                     url = CART_CONTROLLER;
                 }
             } catch (Exception e) {

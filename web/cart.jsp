@@ -37,6 +37,7 @@
                     <!-- Your collapsible menu content goes here -->
                     <!--                    <p>Menu Item 1</p>
                                         <p>Menu Item 2</p>-->
+                    <p>Hi, <%= user.getFullName()%></p>
                     <form action="main" method="post">
                         <button type="sumit" name="action" value="logout" class="logout-button">Logout</button>
                     </form>
@@ -55,26 +56,39 @@
                             for (CartDetails cd : cartList) {
                                 totalPrice += cd.getTotalPrice();
                     %>
-                    <form action="main" method="post" class="item">
+                    <div class="item">
                         <img src="https://cdn-v2.didongviet.vn/files/media/catalog/product/i/p/iphone-14-512gb-likenew-didongviet_1.jpg" alt="Card Image">
                         <div class="item-info">
                             <p><%= cd.getName()%></p>
-                            <p>$<%= cd.getPrice()%></p>
                         </div>
                         <div class="item-info">
-                            <p><%= cd.getPrice()%> x </p>
+                            <p>$<%= cd.getPrice()%> x </p>
                         </div>
                         <div class="item-info">
-                            <input type="number" min="0" max="1000" disabled value="<%= cd.getTotalQuantity()%>">
+                            <div class="cart-details-quantity">
+                                <form action="main" method="get" class="dec-button-form">
+                                    <input type="hidden" name="cartID" value="<%= cd.getCartID()%>">
+                                    <input type="hidden" name="mobileID" value="<%= cd.getMobileID()%>">
+                                    <button <%= cd.getTotalQuantity() <= 1 ? "disabled" : "" %> class="dec-button" type="submit" name="action" value="decreaseCartQuantity">-</button>
+                                </form>
+                                <span class="total-quantity"><%=cd.getTotalQuantity()%></span>
+                                <form action="main" method="get" class="inc-button-form">
+                                    <input type="hidden" name="cartID" value="<%= cd.getCartID()%>">
+                                    <input type="hidden" name="mobileID" value="<%= cd.getMobileID()%>">
+                                    <button class="inc-button" type="submit" name="action" value="increaseCartQuantity">+</button>
+                                </form>
+                            </div>
                         </div>
-                        <input type="hidden" name="cartID" value="<%= cd.getCartID()%>">
-                        <input type="hidden" name="mobileID" value="<%= cd.getMobileID()%>">
-                        <button type="submit" name="action" value="deleteFromCart">X</button>
-                    </form>
+                        <form action="main" method="post" class="item">
+                            <input type="hidden" name="cartID" value="<%= cd.getCartID()%>">
+                            <input type="hidden" name="mobileID" value="<%= cd.getMobileID()%>">
+                            <button class="delete-button" type="submit" name="action" value="deleteFromCart" >X</button>
+                        </form>
+                    </div>
                     <%      }
                         }
                     %>
-                    <div class="total">
+                    <div class="total-price">
                         <p>Total: $<%= totalPrice%></p>
                     </div>
                 </div>

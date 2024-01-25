@@ -76,7 +76,11 @@ public class LoginController extends HttpServlet {
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
-            response.sendRedirect("welcome");
+            if (user.getRole() == 0) {
+                response.sendRedirect("welcome");
+            } else if (user.getRole() == 2) {
+                response.sendRedirect("mobile");
+            }
         } else {
             request.setAttribute("notification", "Authentication failed!");
             request.getRequestDispatcher("login.jsp").forward(request, response);

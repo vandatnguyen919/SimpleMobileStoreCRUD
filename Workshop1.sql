@@ -64,15 +64,19 @@ delete from CartDetails where cartID = 'datucart' and mobileID = 'M1'
 select * from CartDetails
 select * from Cart
 
+update CartDetails
+set totalQuantity = totalQuantity + 1
+where cartID = 'datcart' and mobileID = 'M1'
+
 -- add to cart trigger
 go
-create trigger utg_addCartDetails on CartDetails after insert as 
+create trigger utg_addCartDetails on CartDetails after insert, update as 
 begin
 
 	update CartDetails
 	set totalPrice = i.totalQuantity * m.price
 	from inserted i, Mobile m
-	where i.mobileID = m.mobileID
+	where CartDetails.cartID = i.cartID and CartDetails.mobileID = i.mobileID and i.mobileID = m.mobileID
 
 	update Cart
 	set totalPrice = (select ISNULL(sum(cd.totalPrice), 0)
@@ -87,7 +91,7 @@ end
 
 -- delete from cart trigger
 go
-alter trigger utg_deleteCartDetails on CartDetails after delete as
+create trigger utg_deleteCartDetails on CartDetails after delete as
 begin
 	update Cart
 	set totalPrice = (select ISNULL(sum(cd.totalPrice), 0)
