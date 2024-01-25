@@ -42,35 +42,47 @@ public class CartController extends HttpServlet {
             /* TODO output your page here. You may use following sample code. */
             String action = (String) request.getParameter("action");
             HttpSession session = request.getSession();
+            // get User
             User user = (User) session.getAttribute("user");
-            if (action == null) {
-                if (user != null) {
+            if (user != null) {
+                if (action == null) {
                     List<CartDetails> cartList = DAO.getCartDetails(user.getUserID());
                     request.setAttribute("cartList", cartList);
-                }
-                request.getRequestDispatcher("cart.jsp").forward(request, response);
-            } else {
-                // get User
-                String mobileID = (String) request.getParameter("mobileID");
-                if ("addToCart".equalsIgnoreCase(action)) {
-                    if (DAO.addToCart(user.getUserID(), mobileID)) {
-                        request.setAttribute("message", "Added");
-                    } else {
-                        request.setAttribute("message", "Failed to add");
-                    }
-                    List<Mobile> mobileList = DAO.getMobiles();
-                    request.setAttribute("mobileList", mobileList);
-                    request.getRequestDispatcher("welcome.jsp").forward(request, response);
-                } else if ("deleteFromCart".equalsIgnoreCase(action)) {
-                    if (DAO.deleteFromCart(user.getUserID(), mobileID)) {
-                        request.setAttribute("message", "Deleted");
-                    } else {
-                        request.setAttribute("message", "Failed to delete");
+                    request.getRequestDispatcher("cart.jsp").forward(request, response);
+                } else {
+                    String mobileID = (String) request.getParameter("mobileID");
+                    if ("addToCart".equalsIgnoreCase(action)) {
+                        if (DAO.addToCart(user.getUserID(), mobileID)) {
+//                        request.setAttribute("message", "Added");
+                        } else {
+//                        request.setAttribute("message", "Failed to add");
+                        }
+                        List<Mobile> mobileList = DAO.getMobiles();
+                        request.setAttribute("mobileList", mobileList);
+                        request.getRequestDispatcher("welcome.jsp").forward(request, response);
+                        return;
+                    } else if ("deleteFromCart".equalsIgnoreCase(action)) {
+                        if (DAO.deleteFromCart(user.getUserID(), mobileID)) {
+                            request.setAttribute("message", "Deleted");
+                        } else {
+                            request.setAttribute("message", "Failed to delete");
+                        }
+
+                    } else if ("increaseCartQuantity".equalsIgnoreCase(action)) {
+                        if (DAO.increaseQuantityInCartDetailsByOne(user.getUserID(), mobileID)) {
+                        } else {
+                        }
+                    } else if ("decreaseCartQuantity".equalsIgnoreCase(action)) {
+                        if (DAO.decreaseQuantityInCartDetailsByOne(user.getUserID(), mobileID)) {
+                        } else {
+                        }
                     }
                     List<CartDetails> cartList = DAO.getCartDetails(user.getUserID());
                     request.setAttribute("cartList", cartList);
                     request.getRequestDispatcher("cart.jsp").forward(request, response);
                 }
+            } else {
+                response.sendRedirect("login");
             }
         }
     }

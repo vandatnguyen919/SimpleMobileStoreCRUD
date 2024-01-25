@@ -4,6 +4,7 @@
     Author     : HIEU
 --%>
 
+<%@page import="com.workshop.dto.Cart"%>
 <%@page import="com.workshop.dao.DAO"%>
 <%@page import="com.workshop.dto.Mobile"%>
 <%@page import="java.util.List"%>
@@ -24,18 +25,24 @@
                 response.sendRedirect("login");
                 return;
             }
+            Cart cart = DAO.getCart(user.getUserID());
+            int totalQuantity = 0;
+            if (cart != null) {
+                totalQuantity = cart.getTotalQuantity();
+            }
         %>
         <header class="header">
             <nav>
                 <div class="logo"><a href="welcome"><span class="dat">DAT</span>store.</a></div>
                 <div class="user-menu">
-                    <a href="cart" style="margin-right: 16px">My Cart (${message})</a>
+                    <a href="cart" style="margin-right: 16px">My Cart (<%=totalQuantity%>)</a>
                     <img src="https://via.placeholder.com/30" alt="Profile Picture" class="profile-picture" id="profileButton">
                 </div>
                 <div class="collapse-menu" id="profileMenu">
                     <!-- Your collapsible menu content goes here -->
                     <!--                    <p>Menu Item 1</p>
                                         <p>Menu Item 2</p>-->
+                    <p><%= user.getFullName()%></p>
                     <form action="main" method="post">
                         <button type="sumit" name="action" value="logout" class="logout-button">Logout</button>
                     </form>

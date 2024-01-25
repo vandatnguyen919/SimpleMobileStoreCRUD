@@ -5,6 +5,7 @@
  */
 package com.workshop.dao;
 
+import com.workshop.dto.Cart;
 import com.workshop.dto.CartDetails;
 import com.workshop.dto.Mobile;
 import com.workshop.dto.User;
@@ -312,22 +313,32 @@ public class DAO {
                 + " (?, ?, 0, 0)";
         String sql2 = "insert into [CartDetails](cartID, mobileID, totalQuantity, totalPrice) values "
                 + " (?, ?, 1, 0)";
-        try (Connection con = DBUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql);
-                PreparedStatement ps2 = con.prepareStatement(sql2)) {
+        String sql3 = "update [CartDetails]"
+                + " set totalQuantity = totalQuantity + 1"
+                + " where cartID = ? and mobileID = ?";
+        try (Connection con = DBUtil.getConnection()) {
             // cart does not exist in Cart table
-            try {
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
                 ps.setString(1, cartID);
                 ps.setString(2, userID);
                 ps.executeUpdate();
             } catch (SQLException e) {
             }
             // add a new mobile to cart
-            ps2.setString(1, cartID);
-            ps2.setString(2, mobileID);
-            ok = ps2.executeUpdate() > 0;
+            try (PreparedStatement ps2 = con.prepareStatement(sql2)) {
+                ps2.setString(1, cartID);
+                ps2.setString(2, mobileID);
+                ok = ps2.executeUpdate() > 0;
+            } catch (Exception e) {
+                // update the quantity of the added mobile, if user clicked Add to cart button again 
+                try (PreparedStatement ps3 = con.prepareStatement(sql3)) {
+                    ps3.setString(1, cartID);
+                    ps3.setString(2, mobileID);
+                    ok = ps3.executeUpdate() > 0;
+                } catch (Exception ee) {
+                }
+            }
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return ok;
@@ -347,6 +358,60 @@ public class DAO {
         boolean ok = false;
         String cartID = userID + "cart";
         String sql = "delete from CartDetails where cartID = ? and mobileID = ?";
+        try (Connection con = DBUtil.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, cartID);
+            ps.setString(2, mobileID);
+            ok = ps.executeUpdate() > 0;
+        } catch (Exception e) {
+        }
+        return ok;
+    }
+
+    /**
+     * Increase the quantity of a product by 1.
+     *
+     * @param userID
+     * @param mobileID
+     * @return true if quantity of a product added by 1 successfully, otherwise
+     * false.
+     */
+    public static boolean increaseQuantityInCartDetailsByOne(String userID, String mobileID) {
+        if (userID == null || mobileID == null) {
+            return false;
+        }
+        boolean ok = false;
+        String cartID = userID + "cart";
+        String sql = "update CartDetails"
+                + " set totalQuantity = totalQuantity + 1"
+                + " where cartID = ? and mobileID = ?";
+        try (Connection con = DBUtil.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, cartID);
+            ps.setString(2, mobileID);
+            ok = ps.executeUpdate() > 0;
+        } catch (Exception e) {
+        }
+        return ok;
+    }
+
+    /**
+     * Decrease the quantity of a product by 1.
+     *
+     * @param userID
+     * @param mobileID
+     * @return true if quantity of a product reduced by 1 successfully,
+     * otherwise false.
+     */
+    public static boolean decreaseQuantityInCartDetailsByOne(String userID, String mobileID) {
+        if (userID == null || mobileID == null) {
+            return false;
+        }
+        boolean ok = false;
+        String cartID = userID + "cart";
+        String sql = "update CartDetails"
+                + " set totalQuantity = totalQuantity - 1"
+                + " where cartID = ? and mobileID = ?";
         try (Connection con = DBUtil.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, cartID);
@@ -386,7 +451,7 @@ public class DAO {
                     cd.setName(rs.getString("name"));
                     cd.setPrice(rs.getString("price"));
                     cd.setImagePath(rs.getString("imagePath"));
-                    
+
                     list.add(cd);
                 }
             } catch (Exception e) {
@@ -395,4 +460,37 @@ public class DAO {
         }
         return list;
     }
+
+    /**
+     * Return user's cart in the database.
+     *
+     * @param userID
+     * @return the user's cart. If not found, return null
+     */
+    public static Cart getCart(String userID) {
+        if (userID == null) {
+            return null;
+        }
+        Cart cart = null;
+        String cartID = userID + "cart";
+        String sql = "select * from Cart where cartID = ?";
+        try (Connection con = DBUtil.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, cartID);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    cart = new Cart();
+
+                    cart.setCartID(rs.getString("cartID"));
+                    cart.setUserID(rs.getString("userID"));
+                    cart.setTotalQuantity(rs.getInt("totalQuantity"));
+                    cart.setTotalPrice(rs.getFloat("totalPrice"));
+                }
+            } catch (Exception e) {
+            }
+        } catch (Exception e) {
+        }
+        return cart;
+    }
+
 }

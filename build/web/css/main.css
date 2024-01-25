@@ -31,6 +31,11 @@ nav {
     color: #fff;
 }
 
+.user-menu {
+    display: flex;
+    align-items: center
+}
+
 .profile-picture {
     width: 30px;
     height: 30px;
@@ -44,10 +49,10 @@ nav {
     position: absolute;
     top: 75px; /* Adjust the distance from the top as needed */
     right: 20px;
-    background-color: #333;
-    color: #fff;
+    background-color: #fff;
     padding: 10px;
     border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .logout-button {
@@ -92,21 +97,39 @@ nav {
 
 .filter-title {
     font-weight: bold;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
 }
 
-.filter-options {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+/* Style the labels and inputs */
+.filter-section  label {
+    display: inline-block; /* Display labels and inputs on the same line */
+    margin-bottom: 5px;
+    width: 120px; /* Adjust the width of labels based on your design */
 }
 
-.filter-option {
-    margin-bottom: 8px;
+.filter-section input {
+    width: calc(100% - 130px); /* Calculate the width of the input based on label width */
+    padding: 8px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-.filter-option input {
-    margin-right: 8px;
+/* Style the button */
+.filter-form button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    margin-left: auto;
+}
+
+.filter-form button:hover {
+    opacity: .8;
 }
 
 /* Card list */
@@ -302,6 +325,10 @@ table.mobile-table tr:hover {
     background-color: #e0e0e0;
 }
 
+.cart-container {
+    flex-basis: 40%;
+}
+
 #cart {
     width: 100%;
     margin: 20px auto;
@@ -335,7 +362,7 @@ table.mobile-table tr:hover {
     flex-grow: 1;
 }
 
-.item button {
+.item .delete-button {
     background-color: #ff4d4d;
     color: #fff;
     border: none;
@@ -344,12 +371,43 @@ table.mobile-table tr:hover {
     font-size: 14px;
 }
 
-.item button:hover {
+.item .delete-button:hover {
     background-color: #e60000;
 }
 
-.total {
+.total-price {
     margin-top: 10px;
-    text-align: center;
+    text-align: right;
     font-weight: bold;
+}
+
+.cart-details-quantity{
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+}
+
+.dec-button-form,
+.inc-button-form {
+    width: 30px;
+    height: 30px;
+}
+
+.dec-button,
+.inc-button {
+    width: inherit;
+    height: inherit;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.dec-button,
+.inc-button:hover {
+    opacity: .8;
+}
+
+.total-quantity {
+    width: 100%;
+    text-align: center;
 }

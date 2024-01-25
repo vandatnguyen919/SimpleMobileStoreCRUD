@@ -23,6 +23,9 @@
             if (user == null) {
                 response.sendRedirect("login");
                 return;
+            } else if (user.getRole() != 2) {
+                response.sendError(401);
+                return;
             }
         %>
         <header class="header">
@@ -33,6 +36,7 @@
                     <!-- Your collapsible menu content goes here -->
                     <!--                    <p>Menu Item 1</p>
                                         <p>Menu Item 2</p>-->
+                    <p>Hi, <%= user.getFullName()%></p>
                     <form action="main" method="post">
                         <button type="sumit" name="action" value="logout" class="logout-button">Logout</button>
                     </form>
