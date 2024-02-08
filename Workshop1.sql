@@ -65,8 +65,8 @@ select * from CartDetails
 select * from Cart
 
 update CartDetails
-set totalQuantity = totalQuantity + 1
-where cartID = 'datcart' and mobileID = 'M1'
+set totalQuantity = totalQuantity - 1
+where cartID = 'datcart' and mobileID = 'M5' and totalQuantity > 0
 
 -- add to cart trigger
 go

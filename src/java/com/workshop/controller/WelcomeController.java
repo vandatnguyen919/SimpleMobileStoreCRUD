@@ -39,7 +39,7 @@ public class WelcomeController extends HttpServlet {
             /* TODO output your page here. You may use following sample code. */
             String action = request.getParameter("action");
             // Show all mobiles by default
-            List<Mobile> mobileList = DAO.getMobiles();
+            List<Mobile> mobileList = DAO.getMobiles(true);
             if (action == null) {
                 request.setAttribute("mobileList", mobileList);
                 request.getRequestDispatcher("welcome.jsp").forward(request, response);
@@ -54,7 +54,7 @@ public class WelcomeController extends HttpServlet {
                     if (!maxPriceString.isEmpty()) {
                         maxPrice = Float.parseFloat(maxPriceString);
                     }
-                    mobileList = DAO.getMobiles(minPrice, maxPrice);
+                    mobileList = DAO.getSaleMobiles(minPrice, maxPrice);
                     request.setAttribute("mobileList", mobileList);
                 }
                 request.getRequestDispatcher("welcome.jsp").forward(request, response);

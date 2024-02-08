@@ -91,13 +91,21 @@ public class DAO {
     }
 
     /**
-     * Return the list of all mobiles.
+     * if saleOnly is true, then returns the list of sale mobiles. Otherwise,
+     * return the list of all mobiles
      *
+     * @param saleOnly
      * @return the list of mobiles
      */
-    public static List<Mobile> getMobiles() {
+    public static List<Mobile> getMobiles(boolean saleOnly) {
         List<Mobile> list = new ArrayList<>();
-        String sql = "select * from [Mobile]";
+        String sql;
+        if (saleOnly) {
+            sql = "select * from [Mobile] where notSale = 0";
+        } else {
+            sql = "select * from [Mobile]";
+        }
+
         try (Connection con = DBUtil.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             try (ResultSet rs = ps.executeQuery()) {
@@ -133,17 +141,17 @@ public class DAO {
      * @param maxPrice
      * @return the list of mobiles with that condition
      */
-    public static List<Mobile> getMobiles(float minPrice, float maxPrice) {
+    public static List<Mobile> getSaleMobiles(float minPrice, float maxPrice) {
         List<Mobile> list = new ArrayList<>();
         String sql = "";
         if (minPrice == -1 && maxPrice > -1) {
-            sql = "select * from [Mobile] where price <= ?";
+            sql = "select * from [Mobile] where price <= ? AND notSale = 0";
         } else if (minPrice > -1 && maxPrice == -1) {
-            sql = "select * from [Mobile] where price >= ?";
+            sql = "select * from [Mobile] where price >= ? AND notSale = 0";
         } else if (minPrice > -1 && maxPrice > -1) {
-            sql = "select * from [Mobile] where ? <= price AND price <= ?";
+            sql = "select * from [Mobile] where ? <= price AND price <= ? AND notSale = 0";
         } else if (minPrice == -1 && maxPrice == -1) {
-            sql = "select * from [Mobile]";
+            sql = "select * from [Mobile] where notSale = 0";
         }
         try (Connection con = DBUtil.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
@@ -411,7 +419,7 @@ public class DAO {
         String cartID = userID + "cart";
         String sql = "update CartDetails"
                 + " set totalQuantity = totalQuantity - 1"
-                + " where cartID = ? and mobileID = ?";
+                + " where cartID = ? and mobileID = ? and totalQuantity > 0";
         try (Connection con = DBUtil.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, cartID);
