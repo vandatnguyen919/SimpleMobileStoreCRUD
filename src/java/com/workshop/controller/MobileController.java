@@ -40,19 +40,17 @@ public class MobileController extends HttpServlet {
             String action = request.getParameter("action");
             // Show all mobiles by default
             if (action == null) {
-                List<Mobile> mobileList = DAO.getMobiles();
+                List<Mobile> mobileList = DAO.getMobiles(false);
                 request.setAttribute("mobileList", mobileList);
                 request.getRequestDispatcher("mobile.jsp").forward(request, response);
             } else {
                 List<Mobile> mobileList = null;
                 if ("searchMobile".equalsIgnoreCase(action)) {
                     String q = request.getParameter("q");
-                    if (q == null || q.isEmpty()) {
-                        mobileList = DAO.getMobiles();
-                    } else {
+                    if (q != null && !q.isEmpty()) {
                         mobileList = DAO.getMobiles(q, q);
                     }
-                } else if ("addMobile".equalsIgnoreCase(action)) {
+                } else if ("addMobile".equalsIgnoreCase(action) || "updateMobile".equalsIgnoreCase(action)) {
                     String mobileID = request.getParameter("mobileID");
                     String name = request.getParameter("name");
                     String price = request.getParameter("price");
@@ -60,6 +58,8 @@ public class MobileController extends HttpServlet {
                     String yearOfProduction = request.getParameter("yearOfProduction");
                     String description = request.getParameter("description");
                     String notSale = request.getParameter("notSale");
+                    String imagePath = request.getParameter("imagePath");
+
                     byte notSaleByte = 0;
                     if ("true".equals(notSale)) {
                         notSaleByte = 1;
@@ -72,12 +72,20 @@ public class MobileController extends HttpServlet {
                     mobile.setYearOfProduction(Integer.parseInt(yearOfProduction));
                     mobile.setDescription(description);
                     mobile.setNotSale(notSaleByte);
-                    mobile.setImagePath(null);
+                    mobile.setImagePath(imagePath);
 
-                    if (DAO.addMobile(mobile)) {
-                        request.setAttribute("message", "Added successfully!");
-                    } else {
-                        request.setAttribute("message", "Failed to add!");
+                    if ("addMobile".equalsIgnoreCase(action)) {
+                        if (DAO.addMobile(mobile)) {
+                            request.setAttribute("message", "Added successfully!");
+                        } else {
+                            request.setAttribute("message", "Failed to add!");
+                        }
+                    } else if ("updateMobile".equalsIgnoreCase(action)) {
+                        if (DAO.updateMobile(mobile)) {
+                            request.setAttribute("message", "Updated successfully!");
+                        } else {
+                            request.setAttribute("message", "Failed to update!");
+                        }
                     }
                 } else if ("deleteMobile".equalsIgnoreCase(action)) {
                     String mobileID = request.getParameter("mobileID");
@@ -86,36 +94,9 @@ public class MobileController extends HttpServlet {
                     } else {
                         request.setAttribute("message", "Failed to delete!");
                     }
-                } else if ("updateMobile".equalsIgnoreCase(action)) {
-                    String mobileID = request.getParameter("mobileID");
-                    String name = request.getParameter("name");
-                    String price = request.getParameter("price");
-                    String quantity = request.getParameter("quantity");
-                    String yearOfProduction = request.getParameter("yearOfProduction");
-                    String description = request.getParameter("description");
-                    String notSale = request.getParameter("notSale");
-                    byte notSaleByte = 0;
-                    if ("true".equals(notSale)) {
-                        notSaleByte = 1;
-                    }
-                    Mobile mobile = new Mobile();
-                    mobile.setMobileID(mobileID);
-                    mobile.setName(name);
-                    mobile.setPrice(Float.parseFloat(price));
-                    mobile.setQuantity(Integer.parseInt(quantity));
-                    mobile.setYearOfProduction(Integer.parseInt(yearOfProduction));
-                    mobile.setDescription(description);
-                    mobile.setNotSale(notSaleByte);
-                    mobile.setImagePath(null);
-
-                    if (DAO.updateMobile(mobile)) {
-                        request.setAttribute("message", "Updated successfully!");
-                    } else {
-                        request.setAttribute("message", "Failed to update!");
-                    }
                 }
                 if (!"searchMobile".equalsIgnoreCase(action)) {
-                    mobileList = DAO.getMobiles();
+                    mobileList = DAO.getMobiles(false);
                 }
                 request.setAttribute("mobileList", mobileList);
                 request.getRequestDispatcher("mobile.jsp").forward(request, response);

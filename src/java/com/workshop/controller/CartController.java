@@ -57,7 +57,7 @@ public class CartController extends HttpServlet {
                         } else {
 //                        request.setAttribute("message", "Failed to add");
                         }
-                        List<Mobile> mobileList = DAO.getMobiles();
+                        List<Mobile> mobileList = DAO.getMobiles(true);
                         request.setAttribute("mobileList", mobileList);
                         request.getRequestDispatcher("welcome.jsp").forward(request, response);
                         return;
